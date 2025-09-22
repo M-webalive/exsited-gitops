@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: exsited
+  namespace: argocd
+spec:
+  sourceRepos:
+    - 'ssh://git@github.com/M-webalive/exsited-apps.git'
+    - 'https://github.com/M-webalive/exsited-apps.git'
+  destinations:
+    - namespace: '*'
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
