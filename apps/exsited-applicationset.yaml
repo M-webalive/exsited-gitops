@@ -10,30 +10,26 @@ spec:
           - name: builder-app
             namespace: builder-app
             path: builder-app
-            valuesFile: values/values.yaml
           - name: webhook-app
             namespace: webhook-app
             path: webhook-app
-            valuesFile: values/values.yaml
   template:
     metadata:
       name: '{{name}}'
-      annotations:
-        argocd.argoproj.io/sync-options: CreateNamespace=true
     spec:
       project: exsited
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{namespace}}'
       source:
-        repoURL: ssh://git@github.com/M-webalive/exsited-apps.git
+        repoURL: https://github.com/M-webalive/exsited-apps.git   # public repo → HTTPS
         targetRevision: main
-        path: '{{path}}'
+        path: '{{path}}'               # chart root
         helm:
-          releaseName: '{{name}}'
-          valueFiles:
-            - '{{path}}/{{valuesFile}}'
+          releaseName: '{{name}}'      # no valueFiles → use chart's default values.yaml
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
