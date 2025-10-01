@@ -28,16 +28,16 @@
       #- api-processor-app
       #- dns-app
       #- elastic-app
-      #- email-middleware
+      - email-middleware
       #- catalogue-app
       #- email-service-app
-      - emailer-app
-      - gateway
+      #- emailer-app
+      #- gateway
       - logservice-app
       - pdf-service-app
-      #- ps-app
-      #- sap-app
-      #- sso
+      - ps-app
+      - sap-app
+      - sso
 
     # ---- Private image pull secret (set env vars; skip if public images) ----
     create_pull_secrets: true
