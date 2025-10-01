@@ -37,7 +37,7 @@
       - pdf-service-app
       - ps-app
       - sap-app
-      - sso``
+      - sso
 
     # ---- Private image pull secret (set env vars; skip if public images) ----
     create_pull_secrets: true
