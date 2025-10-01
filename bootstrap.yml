@@ -1,0 +1,167 @@
+---
+- name: Bootstrap Argo CD and apps
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  collections:
+    - kubernetes.core
+
+  vars:
+    # ---- K8s / ArgoCD ----
+    kubeconfig: "{{ lookup('env','KUBECONFIG') | default('~/.kube/config', true) }}"
+    argo_ns: argocd
+    # Official Argo CD install manifest (pin to a tag if you want)
+    argo_manifest: "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
+
+    # ---- Your GitOps repo (ApplicationSet + Project live here) ----
+    gitops_repo_url: "https://github.com/M-webalive/exsited-gitops.git"
+    gitops_branch: "main"
+    gitops_local_dir: "~/exsited-gitops"
+    # Where the files live inside the GitOps repo:
+    project_relpath: "apps/exsited-project.yaml"
+    applicationset_relpath: "apps/exsited-applicationset.yaml"
+
+    # ---- App namespaces ----
+    app_namespaces:
+      - builder-app
+      - webhook-app
+
+    # ---- Private image pull secret (set env vars; skip if public images) ----
+    create_pull_secrets: true
+    dockerhub_secret_name: "exsited-dockerhub"
+    dockerhub_username: "{{ lookup('env','DOCKERHUB_USERNAME') | default('', true) }}"
+    dockerhub_token:    "{{ lookup('env','DOCKERHUB_TOKEN')    | default('', true) }}"
+    dockerhub_email:    "you@example.com"
+
+    # ---- Port-forward to Argo CD UI ----
+    enable_port_forward: true
+    pf_local_port: 8443
+    pf_remote_port: 443
+
+  tasks:
+    - name: Can we talk to the cluster? (list namespaces)
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig }}"
+        api_version: v1
+        kind: Namespace
+
+    - name: Ensure argocd namespace exists
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata: { name: "{{ argo_ns }}" }
+
+    - name: Check if argocd-server exists
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig }}"
+        api_version: apps/v1
+        kind: Deployment
+        namespace: "{{ argo_ns }}"
+        name: argocd-server
+      register: argocd_server_info
+      failed_when: false
+
+    - name: Install Argo CD if missing
+      when: (argocd_server_info.resources | default([]) | length) == 0
+      ansible.builtin.command:
+        cmd: kubectl apply -n {{ argo_ns }} -f {{ argo_manifest }}
+      changed_when: true
+
+    - name: Wait for Argo CD server rollout
+      ansible.builtin.command:
+        cmd: kubectl -n {{ argo_ns }} rollout status deploy/argocd-server --timeout=180s
+      register: rollout
+      retries: 3
+      delay: 10
+      until: rollout.rc == 0
+
+    - name: Clone / update GitOps repo (ApplicationSet + Project)
+      ansible.builtin.git:
+        repo: "{{ gitops_repo_url }}"
+        dest: "{{ gitops_local_dir }}"
+        version: "{{ gitops_branch }}"
+        update: yes
+        depth: 1
+
+    - name: Create app namespaces
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata: { name: "{{ item }}" }
+      loop: "{{ app_namespaces }}"
+
+    - name: Build dockerconfigjson (only if we’ll create secrets)
+      when: create_pull_secrets
+      vars:
+        auth_b64: "{{ (dockerhub_username ~ ':' ~ dockerhub_token) | b64encode }}"
+      set_fact:
+        dockerconfigjson_b64: >-
+          {{
+            {
+              "auths": {
+                "https://index.docker.io/v1/": {
+                  "username": dockerhub_username,
+                  "password": dockerhub_token,
+                  "email": dockerhub_email,
+                  "auth": auth_b64
+                }
+              }
+            } | to_nice_json | b64encode
+          }}
+
+    - name: Create docker-registry Secret in each namespace (skip if env empty)
+      when: create_pull_secrets and dockerhub_username|length > 0 and dockerhub_token|length > 0
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "{{ dockerhub_secret_name }}"
+            namespace: "{{ item }}"
+          type: kubernetes.io/dockerconfigjson
+          data:
+            .dockerconfigjson: "{{ dockerconfigjson_b64 }}"
+      loop: "{{ app_namespaces }}"
+
+    - name: Apply AppProject (exsited) from GitOps repo
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        state: present
+        namespace: "{{ argo_ns }}"
+        src: "{{ gitops_local_dir }}/{{ project_relpath }}"
+
+    - name: Apply ApplicationSet from GitOps repo
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        state: present
+        namespace: "{{ argo_ns }}"
+        src: "{{ gitops_local_dir }}/{{ applicationset_relpath }}"
+
+    - name: Start port-forward to Argo CD UI (https://localhost:{{ pf_local_port }})
+      when: enable_port_forward
+      ansible.builtin.shell: |
+        nohup kubectl -n {{ argo_ns }} port-forward svc/argocd-server {{ pf_local_port }}:{{ pf_remote_port }} --address 127.0.0.1 > /tmp/argocd-pf.log 2>&1 &
+        echo $! > /tmp/argocd-pf.pid
+      args:
+        executable: /bin/bash
+      changed_when: true
+
+    - name: Show Argo CD Applications (sanity check)
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig }}"
+        api_version: argoproj.io/v1alpha1
+        kind: Application
+        namespace: all
+      register: argo_apps
+
+    - name: Print apps
+      ansible.builtin.debug:
+        msg: "{{ (argo_apps.resources | default([])) | map(attribute='metadata.name') | list }}"

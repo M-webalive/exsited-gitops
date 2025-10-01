@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: exsited-two-apps
+  name: exsited-apps
   namespace: argocd
 spec:
   generators:
@@ -13,6 +13,46 @@ spec:
           - name: webhook-app
             namespace: webhook-app
             path: webhook-app
+          - name: api-processor-app
+            namespace: api-processor-app
+            path: api-processor-app
+          - name: dns-app
+            namespace: dns-app
+            path: dns-app
+          - name: elastic-app
+            namespace: elastic-app
+            path: elastic-app
+          - name: email-middleware
+            namespace: email-middleware
+            path: email-middleware
+          - name: catalogue-app
+            namespace: catalogue-app
+            path: catalogue-app
+          - name: email-service-app
+            namespace: email-service-app
+            path: email-service-app
+          - name: emailer-app
+            namespace: emailer-app
+            path: emailer-app
+          - name: gateway
+            namespace: gateway
+            path: gateway
+          - name: logservice-app
+            namespace: logservice-app
+            path: logservice-app
+          - name: pdf-service-app
+            namespace: pdf-service-app
+            path: pdf-service-app
+          - name: ps-app
+            namespace: ps-app
+            path: ps-app
+          - name: sap-app
+            namespace: sap-app
+            path: sap-app
+          - name: sso
+            namespace: sso
+            path: sso      
+                        
   template:
     metadata:
       name: '{{name}}'
@@ -22,11 +62,11 @@ spec:
         server: https://kubernetes.default.svc
         namespace: '{{namespace}}'
       source:
-        repoURL: https://github.com/M-webalive/exsited-apps.git   # public repo → HTTPS
+        repoURL: https://github.com/M-webalive/exsited-apps.git   
         targetRevision: main
         path: '{{path}}'               # chart root
         helm:
-          releaseName: '{{name}}'      # no valueFiles → use chart's default values.yaml
+          releaseName: '{{name}}'      
       syncPolicy:
         automated:
           prune: true
