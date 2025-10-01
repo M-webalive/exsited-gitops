@@ -7,42 +7,42 @@ spec:
   generators:
     - list:
         elements:
-          - name: builder-app
-            namespace: builder-app
-            path: builder-app
+          #- name: builder-app
+            #namespace: builder-app
+            #path: builder-app
           #- name: webhook-app
             #namespace: webhook-app
             #path: webhook-app
-          - name: api-processor-app
-            namespace: api-processor-app
-            path: api-processor-app
+          #- name: api-processor-app
+            #namespace: api-processor-app
+            #path: api-processor-app
           #- name: dns-app
             #namespace: dns-app
             #path: dns-app
           #- name: elastic-app
             #namespace: elastic-app
             #path: elastic-app
-          - name: email-middleware
-            namespace: email-middleware
-            path: email-middleware
-          - name: catalogue-app
-            namespace: catalogue-app
-            path: catalogue-app
+          #- name: email-middleware
+            #namespace: email-middleware
+            #path: email-middleware
+          #- name: catalogue-app
+            #namespace: catalogue-app
+            #path: catalogue-app
           #- name: email-service-app
             #namespace: email-service-app
             #path: email-service-app
-          #- name: emailer-app
-            #namespace: emailer-app
-            #path: emailer-app
-          #- name: gateway
-            #namespace: gateway
-            #path: gateway
-          #- name: logservice-app
-            #namespace: logservice-app
-            #path: logservice-app
-          #- name: pdf-service-app
-            #namespace: pdf-service-app
-            #path: pdf-service-app
+          - name: emailer-app
+            namespace: emailer-app
+            path: emailer-app
+          - name: gateway
+            namespace: gateway
+            path: gateway
+          - name: logservice-app
+            namespace: logservice-app
+            path: logservice-app
+          - name: pdf-service-app
+            namespace: pdf-service-app
+            path: pdf-service-app
           #- name: ps-app
             #namespace: ps-app
             #path: ps-app
