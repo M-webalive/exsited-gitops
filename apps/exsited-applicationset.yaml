@@ -29,8 +29,8 @@ spec:
             #namespace: catalogue-app
             #path: catalogue-app
           - name: email-service-app
-            #namespace: email-service-app
-            #path: email-service-app
+            namespace: email-service-app
+            path: email-service-app
           #- name: emailer-app
             #namespace: emailer-app
             #path: emailer-app
