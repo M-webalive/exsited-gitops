@@ -22,15 +22,15 @@ spec:
           #- name: elastic-app
             #namespace: elastic-app
             #path: elastic-app
-          - name: email-middleware
-            namespace: email-middleware
-            path: email-middleware
+          #- name: email-middleware
+            #namespace: email-middleware
+            #path: email-middleware
           #- name: catalogue-app
             #namespace: catalogue-app
             #path: catalogue-app
-          #- name: email-service-app
-            #namespace: email-service-app
-            #path: email-service-app
+          - name: email-service-app
+            namespace: email-service-app
+            path: email-service-app
           #- name: emailer-app
             #namespace: emailer-app
             #path: emailer-app
@@ -40,18 +40,18 @@ spec:
           - name: logservice-app
             namespace: logservice-app
             path: logservice-app
-          - name: pdf-service-app
-            namespace: pdf-service-app
-            path: pdf-service-app
+          #- name: pdf-service-app
+            #namespace: pdf-service-app
+            #path: pdf-service-app
           - name: ps-app
             namespace: ps-app
             path: ps-app
-          - name: sap-app
-            namespace: sap-app
-            path: sap-app
-          - name: sso
-            namespace: sso
-            path: sso      
+          #- name: sap-app
+            #namespace: sap-app
+            #path: sap-app
+          #- name: sso
+            #namespace: sso
+            #path: sso      
                         
   template:
     metadata:
