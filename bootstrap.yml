@@ -23,17 +23,17 @@
 
     # ---- App namespaces ----
     app_namespaces:
-      #- builder-app
+      - builder-app
       #- webhook-app
       #- api-processor-app
       #- dns-app
       #- elastic-app
       #- email-middleware
-      #- catalogue-app
+      - catalogue-app
       - email-service-app
-      #- emailer-app
+      - emailer-app
       #- gateway
-      - logservice-app
+      #- logservice-app
       #- pdf-service-app
       - ps-app
       #- sap-app

@@ -7,9 +7,9 @@ spec:
   generators:
     - list:
         elements:
-          #- name: builder-app
-            #namespace: builder-app
-            #path: builder-app
+          - name: builder-app
+            namespace: builder-app
+            path: builder-app
           #- name: webhook-app
             #namespace: webhook-app
             #path: webhook-app
@@ -25,21 +25,21 @@ spec:
           #- name: email-middleware
             #namespace: email-middleware
             #path: email-middleware
-          #- name: catalogue-app
-            #namespace: catalogue-app
-            #path: catalogue-app
+          - name: catalogue-app
+            namespace: catalogue-app
+            path: catalogue-app
           - name: email-service-app
             namespace: email-service-app
             path: email-service-app
-          #- name: emailer-app
-            #namespace: emailer-app
-            #path: emailer-app
+          - name: emailer-app
+            namespace: emailer-app
+            path: emailer-app
           #- name: gateway
             #namespace: gateway
             #path: gateway
-          - name: logservice-app
-            namespace: logservice-app
-            path: logservice-app
+          #- name: logservice-app
+            #namespace: logservice-app
+            #path: logservice-app
           #- name: pdf-service-app
             #namespace: pdf-service-app
             #path: pdf-service-app
