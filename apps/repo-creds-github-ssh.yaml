@@ -1,0 +1,14 @@
+# save as repo-creds-github-ssh.yaml (DO NOT commit real private key to public repos)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: repo-creds-github-ssh
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repo-creds
+stringData:
+  url: ssh://git@github.com
+  sshPrivateKey: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    <PASTE CONTENTS OF ~/.ssh/<KEYNAME> HERE>
+    -----END OPENSSH PRIVATE KEY-----

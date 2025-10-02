@@ -91,6 +91,26 @@
       delay: 10
       until: rollout.rc == 0
 
+    - name: Ensure github.com is in known_hosts
+      ansible.builtin.shell: |
+        mkdir -p ~/.ssh
+        touch ~/.ssh/known_hosts
+        ssh-keyscan -t rsa,ecdsa,ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null || true
+      args:
+        executable: /bin/bash
+
+    - name: Clone / update GitOps repo using SSH key
+      ansible.builtin.git:
+        repo: "{{ gitops_repo_url }}"
+        dest: "{{ gitops_local_dir }}"
+        version: "{{ gitops_branch }}"
+        update: yes
+        depth: 1
+        key_file: "~/.ssh/id_rsa"
+      environment:
+        GIT_SSH_COMMAND: "ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes"
+
+
     - name: Clone / update GitOps repo (ApplicationSet + Project)
       ansible.builtin.git:
         repo: "{{ gitops_repo_url }}"
