@@ -62,7 +62,7 @@ spec:
         server: https://kubernetes.default.svc
         namespace: '{{namespace}}'
       source:
-        repoURL: https://github.com/M-webalive/exsited-apps.git   
+        repoURL: ssh://git@github.com/M-webalive/exsited-apps.git   
         targetRevision: main
         path: '{{path}}'               # chart root
         helm:

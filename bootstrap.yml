@@ -14,7 +14,7 @@
     argo_manifest: "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
 
     # ---- Your GitOps repo (ApplicationSet + Project live here) ----
-    gitops_repo_url: "https://github.com/M-webalive/exsited-gitops.git"
+    gitops_repo_url: "ssh://git@github.com/M-webalive/exsited-gitops.git"
     gitops_branch: "main"
     gitops_local_dir: "~/exsited-gitops"
     # Where the files live inside the GitOps repo:
