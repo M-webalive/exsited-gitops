@@ -10,6 +10,9 @@ spec:
           - name: builder-app
             namespace: builder-app
             path: builder-app
+          - name: autobill-frontend
+            namespace: autobill-frontend
+            path: autobill-frontend
           #- name: webhook-app
             #namespace: webhook-app
             #path: webhook-app

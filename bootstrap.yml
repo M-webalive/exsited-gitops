@@ -24,6 +24,7 @@
     # ---- App namespaces ----
     app_namespaces:
       - builder-app
+      - autobill-frontend
       #- webhook-app
       #- api-processor-app
       #- dns-app
